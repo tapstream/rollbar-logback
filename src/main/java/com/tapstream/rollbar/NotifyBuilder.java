@@ -15,6 +15,10 @@ public class NotifyBuilder {
 
     private static final String NOTIFIER_VERSION = "0.2";
 
+    private static final String PERSON_EMAIL_KEY = "person.email";
+    private static final String PERSON_USERNAME_KEY = "person.username";
+    private static final String PERSON_ID_KEY = "person.id";
+
     private final String accessToken;
     private final String environment;
     private final String rollbarContext;
@@ -60,6 +64,12 @@ public class NotifyBuilder {
         data.put("body", getBody(message, throwable));
         data.put("request", buildRequest(context));
 
+        // Add person if available
+        JSONObject person = buildPerson(context);
+        if (person != null) {
+            data.put("person", person);
+        }
+
         // Custom data and log message if there's a throwable
         JSONObject customData = buildCustom(context);
         if (throwable != null && message != null) {
@@ -93,7 +103,27 @@ public class NotifyBuilder {
         }
         return custom;
     }
-    
+
+    private JSONObject buildPerson(Map<String, String> ctx) {
+        JSONObject request = new JSONObject();
+        boolean populated = false;
+
+        if (ctx.containsKey(PERSON_ID_KEY)) {
+            request.put("id", ctx.get(PERSON_ID_KEY));
+            populated = true;
+        }
+        if (ctx.containsKey(PERSON_USERNAME_KEY)) {
+            request.put("username", ctx.get(PERSON_USERNAME_KEY));
+            populated = true;
+        }
+        if (ctx.containsKey(PERSON_EMAIL_KEY)) {
+            request.put("email", ctx.get(PERSON_EMAIL_KEY));
+            populated = true;
+        }
+
+        return populated ? request : null;
+    }
+
     private String stripPrefix(String value, String prefix){
         return value.substring(prefix.length(), value.length());
     }
