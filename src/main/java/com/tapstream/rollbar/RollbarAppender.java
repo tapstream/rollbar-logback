@@ -3,7 +3,6 @@ package com.tapstream.rollbar;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 import org.json.JSONException;
@@ -79,7 +78,7 @@ public class RollbarAppender extends UnsynchronizedAppenderBase<ILoggingEvent>{
    
         try {
             payloadBuilder = new NotifyBuilder(apiKey, environment, rollbarContext);
-        } catch (JSONException | UnknownHostException e) {
+        } catch (JSONException e) {
             addError("Error building NotifyBuilder", e);
             error = true;
         }

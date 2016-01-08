@@ -22,7 +22,7 @@ public class NotifyBuilder {
     private final JSONObject notifierData;
     private final JSONObject serverData;
 
-    public NotifyBuilder(String accessToken, String environment, String rollbarContext) throws JSONException, UnknownHostException {
+    public NotifyBuilder(String accessToken, String environment, String rollbarContext) throws JSONException {
         this.accessToken = accessToken;
         this.environment = environment;
         this.rollbarContext = rollbarContext;
@@ -68,7 +68,9 @@ public class NotifyBuilder {
 
         data.put("custom", customData);
         data.put("client", buildClient(context));
-        data.put("server", serverData);
+        if (serverData != null) {
+            data.put("server", serverData);
+        }
         data.put("notifier", notifierData);
         payload.put("data", data);
 
@@ -166,17 +168,20 @@ public class NotifyBuilder {
         return notifier;
     }
 
-    private JSONObject getServerData() throws JSONException, UnknownHostException {
+    private JSONObject getServerData() throws JSONException {
+        try {
+            InetAddress localhost = InetAddress.getLocalHost();
 
-        InetAddress localhost = InetAddress.getLocalHost();
+            String host = localhost.getHostName();
+            String ip = localhost.getHostAddress();
 
-        String host = localhost.getHostName();
-        String ip = localhost.getHostAddress();
-
-        JSONObject notifier = new JSONObject();
-        notifier.put("host", host);
-        notifier.put("ip", ip);
-        return notifier;
+            JSONObject notifier = new JSONObject();
+            notifier.put("host", host);
+            notifier.put("ip", ip);
+            return notifier;
+        } catch (UnknownHostException e) {
+            return null;
+        }
     }
 
     private JSONObject createTrace(Throwable throwable) throws JSONException {
