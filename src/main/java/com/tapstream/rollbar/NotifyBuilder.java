@@ -18,6 +18,8 @@ public class NotifyBuilder {
     private static final String PERSON_EMAIL_KEY = "person.email";
     private static final String PERSON_USERNAME_KEY = "person.username";
     private static final String PERSON_ID_KEY = "person.id";
+    private static final String UUID_KEY = "uuid";
+
 
     private final String accessToken;
     private final String environment;
@@ -33,7 +35,7 @@ public class NotifyBuilder {
         this.notifierData = getNotifierData();
         this.serverData = getServerData();
     }
-    
+
 
     private String getValue(String key, Map<String, String> context, String defaultValue) {
         if (context == null) return defaultValue;
@@ -76,6 +78,11 @@ public class NotifyBuilder {
             customData.put("log", message);
         }
 
+        // UUID if available
+        if (context.containsKey(UUID_KEY)) {
+            data.put("uuid", context.get(UUID_KEY));
+        }
+
         data.put("custom", customData);
         data.put("client", buildClient(context));
         if (serverData != null) {
@@ -86,7 +93,7 @@ public class NotifyBuilder {
 
         return payload;
     }
-    
+
     private JSONObject buildClient(Map<String, String> ctx){
         JSONObject client = new JSONObject();
         JSONObject javaScript = new JSONObject();
@@ -94,7 +101,7 @@ public class NotifyBuilder {
         client.put("javascript", javaScript);
         return client;
     }
-    
+
     private JSONObject buildCustom(Map<String, String> ctx){
         JSONObject custom = new JSONObject();
         for (Entry<String, String> ctxEntry : ctx.entrySet()){
@@ -129,15 +136,15 @@ public class NotifyBuilder {
     private String stripPrefix(String value, String prefix){
         return value.substring(prefix.length(), value.length());
     }
-    
+
     private JSONObject buildRequest(Map<String, String> ctx){
         JSONObject request = new JSONObject();
         request.put("url", ctx.get(RollbarFilter.REQUEST_URL));
         request.put("query_string", ctx.get(RollbarFilter.REQUEST_QS));
-        
+
         JSONObject headers = new JSONObject();
         JSONObject params = new JSONObject();
-        
+
         for (Entry<String, String> ctxEntry : ctx.entrySet()){
             String key = ctxEntry.getKey();
             if (key.startsWith(RollbarFilter.REQUEST_HEADER_PREFIX)){
@@ -146,9 +153,9 @@ public class NotifyBuilder {
                 params.put(stripPrefix(key, RollbarFilter.REQUEST_PARAM_PREFIX), ctxEntry.getValue());
             }
         }
-        
+
         request.put("headers", headers);
-        
+
         String method = ctx.get(RollbarFilter.REQUEST_METHOD);
         if (method != null){
             request.put("method", method);
@@ -161,8 +168,8 @@ public class NotifyBuilder {
                 break;
             }
         }
-        
-        
+
+
         request.put("user_ip", ctx.get(RollbarFilter.REQUEST_REMOTE_ADDR));
         return request;
     }
