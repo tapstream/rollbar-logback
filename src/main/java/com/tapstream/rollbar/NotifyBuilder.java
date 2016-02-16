@@ -18,6 +18,7 @@ public class NotifyBuilder {
     private static final String PERSON_EMAIL_KEY = "person.email";
     private static final String PERSON_USERNAME_KEY = "person.username";
     private static final String PERSON_ID_KEY = "person.id";
+    private static final String UUID_KEY = "uuid";
 
     private final String accessToken;
     private final String environment;
@@ -70,12 +71,17 @@ public class NotifyBuilder {
             data.put("person", person);
         }
 
+        // UUID if available
+        if (context.containsKey(UUID_KEY)) {
+            data.put("uuid", context.get(UUID_KEY));
+        }
+
         // Custom data and log message if there's a throwable
         JSONObject customData = buildCustom(context);
         if (throwable != null && message != null) {
             customData.put("log", message);
         }
-
+        
         data.put("custom", customData);
         data.put("client", buildClient(context));
         if (serverData != null) {
@@ -86,7 +92,7 @@ public class NotifyBuilder {
 
         return payload;
     }
-    
+
     private JSONObject buildClient(Map<String, String> ctx){
         JSONObject client = new JSONObject();
         JSONObject javaScript = new JSONObject();
