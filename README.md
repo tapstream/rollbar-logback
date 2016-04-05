@@ -23,8 +23,19 @@ Logback
 Appender parameters:
 
 * url: The Rollbar API url. Default: https://api.rollbar.com/api/1/item/
-* apiKey: The rollbar API key. Mandatory.
+* apiKey: The rollbar API key. The API key is mandatory and has to be set either here or
+  [via an environment variable](#providing-the-api-key-externally).
 * environment: Environment. i.e. production, test, development. Mandatory.
+
+
+Providing the API key externally
+---------------------------------------
+
+You can choose to set the API key by using an environment variable. This way your API key stays out of your code and
+your source control repository.
+
+Create the environment variable `ROLLBAR_LOGBACK_API_KEY` and set its value to your API key. This value will
+override the value set in `logback.xml` (if set).
 
 
 Custom MDC parameters
