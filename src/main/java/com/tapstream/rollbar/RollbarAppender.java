@@ -13,7 +13,9 @@ import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 
 public class RollbarAppender extends UnsynchronizedAppenderBase<ILoggingEvent>{    
-    
+
+    private static final String ENV_VAR_APIKEY = "ROLLBAR_LOGBACK_API_KEY";
+
     private NotifyBuilder payloadBuilder;
     
     private URL url;
@@ -62,7 +64,16 @@ public class RollbarAppender extends UnsynchronizedAppenderBase<ILoggingEvent>{
     @Override
     public void start() {
         boolean error = false;
-        
+
+        try {
+            String environmentApiKey = System.getenv(ENV_VAR_APIKEY);
+            if(environmentApiKey != null){
+                this.apiKey = environmentApiKey;
+            }
+        } catch(SecurityException e){
+            addWarn("Access to environment variables was denied. ("+e.getMessage()+")");
+        }
+
         if (this.url == null) {
             addError("No url set for the appender named [" + getName() + "].");
             error = true;
