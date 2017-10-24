@@ -12,18 +12,18 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.UnsynchronizedAppenderBase;
 
-public class RollbarAppender extends UnsynchronizedAppenderBase<ILoggingEvent>{    
+public class RollbarAppender extends UnsynchronizedAppenderBase<ILoggingEvent>{
 
-    private static final String ENV_VAR_APIKEY = "ROLLBAR_LOGBACK_API_KEY";
+    protected static final String ENV_VAR_APIKEY = "ROLLBAR_LOGBACK_API_KEY";
 
-    private NotifyBuilder payloadBuilder;
+    protected NotifyBuilder payloadBuilder;
     
-    private URL url;
-    private String apiKey;
-    private String environment;
-    private String rollbarContext;
-    private boolean async = true;
-    private IHttpRequester httpRequester = new HttpRequester();
+    protected URL url;
+    protected String apiKey;
+    protected String environment;
+    protected String rollbarContext;
+    protected boolean async = true;
+    protected IHttpRequester httpRequester = new HttpRequester();
     
     public RollbarAppender(){
         try {
